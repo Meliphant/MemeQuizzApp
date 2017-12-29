@@ -193,5 +193,4 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(a);
     }
-
 }
