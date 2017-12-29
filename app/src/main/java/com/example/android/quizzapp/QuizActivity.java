@@ -46,7 +46,6 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
             R.id.radio4_4
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
