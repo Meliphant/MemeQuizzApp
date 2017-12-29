@@ -71,4 +71,8 @@
     <string name="messageresultGenius">\n\nYou are the Genius.\nMan you know everything about memes and have a meme as an answer on an each question.\nCmon get a life.</string>
     <string name="messageresultCaptain">\n\nYou are the Captain Obvious, okay, not that bad.</string>
     <string name="messageresultSlowpoke">\n\nYou are the SLOWPOKE, my dear friend.</string>
+
+    <string name="yes">Yes!</string>
+    <string name="no">Nono.</string>
+    <string name="exitApp">Are you sure you want to close the app?</string>
 </resources>
