@@ -1,13 +1,11 @@
 package com.example.android.quizzapp;
 
-        import android.app.Activity;
         import android.content.DialogInterface;
         import android.content.Intent;
         import android.content.res.Resources;
         import android.graphics.Color;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
-        import android.util.Log;
         import android.support.v7.app.AlertDialog;
         import android.view.View;
         import android.widget.Button;
@@ -53,7 +51,6 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
 
         submit = (Button) findViewById(R.id.submit);
         submit.setOnClickListener(this);
-
 
     }
 
@@ -187,9 +184,9 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void exit() {
-        Intent a = new Intent(Intent.ACTION_MAIN);
-        a.addCategory(Intent.CATEGORY_HOME);
-        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(a);
+        Intent setMainActivity = new Intent(Intent.ACTION_MAIN);
+        setMainActivity.addCategory(Intent.CATEGORY_HOME);
+        setMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(setMainActivity);
     }
 }
