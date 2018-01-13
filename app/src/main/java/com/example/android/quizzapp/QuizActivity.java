@@ -1,27 +1,34 @@
 package com.example.android.quizzapp;
 
-        import android.content.DialogInterface;
-        import android.content.Intent;
-        import android.content.res.Resources;
-        import android.graphics.Color;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.support.v7.app.AlertDialog;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.CheckBox;
-        import android.widget.ImageView;
-        import android.widget.RadioButton;
-        import android.widget.RadioGroup;
-        import android.widget.TextView;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class QuizActivity extends AppCompatActivity implements View.OnClickListener{
+public class QuizActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Button submit;
-    int score = 0, buttonState = 1;
-    String userName, message;
-    ImageView picResult;
+    private Button submit;
+    private TextView scoreResult;
+    private int score = 0, scoreRotate = 0, buttonState = 1;
+    private String userName, message;
+    private ImageView picResult;
+    private ScrollView getScrollView;
 
+    static final String SCORE_ROTATE_SAVER = "scoreRotateSaver";
+    static final String USER_NAME = "userName";
+    static final String SCREEN_STATE = "buttonState";
     /**
      * ID array for all RadioGroups
      */
@@ -49,41 +56,49 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questions);
 
-        submit = (Button) findViewById(R.id.submit);
+        submit = findViewById(R.id.submit);
         submit.setOnClickListener(this);
 
+        scoreResult = findViewById(R.id.scoreResult);
+        picResult = findViewById(R.id.pic_answer);
     }
-
+    /**
+     * onClick method checks state of the quiz activity screen and either shows the result of the quiz or starts new one
+     * buttonState == 1 -- for screen with active questions
+     * buttonState == 0 -- for screen with a result
+     */
     @Override
-    public void onClick(View v){
-        switch (v.getId()){
-            case R.id.submit:
-                if (buttonState == 1){
-                    getRadioAnswers();
-                    getCheckBoxAnswers();
-                    checkAnswer();
-                } else resetAnswer();
-                //Toast.makeText(getApplicationContext(), "Your score is "  + score, Toast.LENGTH_SHORT).show();
-                break;
+    public void onClick(View v) {
+        if (v.getId() == R.id.submit) {
+            if (buttonState == 1) {
+                getRadioAnswers();
+                getCheckBoxAnswers();
+                checkAnswer(score);
+                setToZero();
+                scrollDialogDown();
+            } else {
+                resetAnswer();
+            }
         }
     }
-    private void checkAnswer(){
-        TextView scoreResult = (TextView) findViewById(R.id.scoreResult);
-        picResult = (ImageView) findViewById(R.id.pic_answer);
+
+    private void checkAnswer(int score) {
         message = getTheMessage(score, picResult);
         scoreResult.setText(message);
         scoreResult.setVisibility(View.VISIBLE);
         picResult.setVisibility(View.VISIBLE);
         submit.setText(getString(R.string.again));
+        scoreRotate = score;
+    }
+    private void setToZero (){
         score = 0;
         buttonState = 0;
     }
-
-    private void resetAnswer(){
+    private void resetAnswer() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-        TextView scoreResult = (TextView) findViewById(R.id.scoreResult);
-        ImageView picResult = (ImageView) findViewById(R.id.pic_answer);
+        //call the destroy method to kill QuizActivity intent after redirecting to the new MainActivity
+        finish();
         scoreResult.setVisibility(View.GONE);
         picResult.setVisibility(View.GONE);
         submit.setText(getString(R.string.again));
@@ -91,102 +106,138 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         clearRadioAnswers();
         buttonState = 1;
     }
-
-    //calculates RadioButton question
-    private void getRadioAnswers(){
+    /**
+     * calculates RadioButton question
+     */
+    private void getRadioAnswers() {
         int i = 0;
         Resources res = getResources();
         String[] answerRB = res.getStringArray(R.array.correctRadioGroupsArr);
-        for (int idRadioGroup : allRadioGroupsArr){
-            RadioGroup currRadioGroup = (RadioGroup) findViewById(idRadioGroup);
+        for (int idRadioGroup : allRadioGroupsArr) {
+            RadioGroup currRadioGroup = findViewById(idRadioGroup);
             if (currRadioGroup.getCheckedRadioButtonId() != -1) {
                 String textRadioButton = ((RadioButton) findViewById(currRadioGroup.getCheckedRadioButtonId())).getText().toString();
-                if (textRadioButton.equals(answerRB[i])) score++;
+                if (textRadioButton.equals(answerRB[i])) {
+                    score++;
+                }
             }
             i++;
         }
     }
 
-    //calculates CheckBoxes question
-    private void getCheckBoxAnswers(){
+    /**
+     * calculates CheckBoxes question
+     */
+    private void getCheckBoxAnswers() {
         int i = 0, k = 0;
         Resources res = getResources();
         String[] answerCB = res.getStringArray(R.array.correctCheckBoxesArr);
-
-        for (int idCB : allCheckBoxesArr){
-            CheckBox currCheckBox = (CheckBox) findViewById(idCB);
-            if (currCheckBox.isChecked()){
+        for (int idCB : allCheckBoxesArr) {
+            CheckBox currCheckBox = findViewById(idCB);
+            if (currCheckBox.isChecked()) {
                 String textCheckBox = ((CheckBox) findViewById(idCB)).getText().toString();
-                if (textCheckBox.equals(answerCB[i])) k++;
+                for (int j = 0; j < answerCB.length; j++) {
+                    if (textCheckBox.equals(answerCB[j])) k++;
+                }
             }
             i++;
         }
-        if (k == 3) score++;
+        if (k == 3) {
+            score++;
+        }
     }
 
-    private void clearRadioAnswers(){
-        for (int idRB : allRadioGroupsArr){
-            RadioGroup currRadioGroup = (RadioGroup) findViewById(idRB);
+    /**
+     * clears RadioButton question
+     */
+    private void clearRadioAnswers() {
+        for (int idRB : allRadioGroupsArr) {
+            RadioGroup currRadioGroup = findViewById(idRB);
             currRadioGroup.clearCheck();
         }
     }
 
-    private void clearCheckBoxAnswers(){
-        for (int idCB : allCheckBoxesArr){
-            CheckBox currCheckBox = (CheckBox) findViewById(idCB);
+    /**
+     * clears CheckBoxes question
+     */
+    private void clearCheckBoxAnswers() {
+        for (int idCB : allCheckBoxesArr) {
+            CheckBox currCheckBox = findViewById(idCB);
             if (currCheckBox.isChecked()) currCheckBox.setChecked(false);
         }
     }
 
-    //set the result message after Submit button clicked
+    /**
+     * sets the result message after Submit button is clicked
+     */
     private String getTheMessage(int score, ImageView picResult) {
         Intent getQuizActivity = getIntent();
         userName = getQuizActivity.getStringExtra(MainActivity.EXTRA_MESSAGE);
         message = getString(R.string.dear) + userName + "!\n" + getString(R.string.messageBase) + score;
-       if (score > 6) {
-           message += getString(R.string.messageresultGenius);
-           picResult.setImageResource(R.drawable.answer1);
-       } else if (score > 3) {
-           message += getString(R.string.messageresultCaptain);
-           picResult.setImageResource(R.drawable.answer2);
-       } else {
-           message += getString(R.string.messageresultSlowpoke);
-           picResult.setImageResource(R.drawable.answer3);
-       }
+        if (score > 6) {
+            message += getString(R.string.messageresultGenius);
+            picResult.setImageResource(R.drawable.answer1);
+        } else if (score > 3) {
+            message += getString(R.string.messageresultCaptain);
+            picResult.setImageResource(R.drawable.answer2);
+        } else {
+            message += getString(R.string.messageresultSlowpoke);
+            picResult.setImageResource(R.drawable.answer3);
+        }
         return message;
     }
+
+    /**
+     * scrolls to the bottom of the screen when Submit button is pressed
+     */
+    private void scrollDialogDown() {
+        getScrollView = findViewById(R.id.scrollview);
+        getScrollView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        }, 100);
+    }
+
+    /**
+     * starts new MainActivity when back button is pressed
+     */
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder exit = new AlertDialog.Builder(QuizActivity.this);
-        exit
-                .setMessage(R.string.exitApp)
-                .setNegativeButton(R.string.yes,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                exit();
-                            }
-                        })
-                .setPositiveButton(R.string.no,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                return;
-                            }
-                        });
-
-        AlertDialog alertDialog_exit = exit.create();
-        alertDialog_exit.show();
-        Button p = alertDialog_exit.getButton(DialogInterface.BUTTON_POSITIVE);
-        p.setTextColor(Color.BLACK);
-        Button n = alertDialog_exit.getButton(DialogInterface.BUTTON_NEGATIVE);
-        n.setTextColor(Color.BLACK);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
-    public void exit() {
-        Intent setMainActivity = new Intent(Intent.ACTION_MAIN);
-        setMainActivity.addCategory(Intent.CATEGORY_HOME);
-        setMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(setMainActivity);
+    protected void onSaveInstanceState(Bundle bundle){
+        bundle.putInt(SCORE_ROTATE_SAVER, scoreRotate);
+        bundle.putString(USER_NAME, userName);
+        bundle.putInt(SCREEN_STATE, buttonState);
+        super.onSaveInstanceState(bundle);
     }
+
+    public void onRestoreInstanceState(Bundle bundle){
+        scoreRotate = bundle.getInt(SCORE_ROTATE_SAVER);
+        bundle.getString(USER_NAME);
+        buttonState = bundle.getInt(SCREEN_STATE);
+        if (buttonState == 0) {
+            checkAnswer(scoreRotate);
+            scrollDialogDown();
+        }
+        super.onRestoreInstanceState(bundle);
+    }
+
+    /*
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.exitQuiz)
+                .setNegativeButton(R.string.no, null)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    }
+                }).create().show();
+    }*/
 }
