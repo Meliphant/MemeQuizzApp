@@ -75,7 +75,9 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                 getCheckBoxAnswers();
                 checkAnswer(score);
                 setToZero();
+                disableRadioAnswers();
                 scrollDialogDown();
+                disableCheckBoxAnswers();
             } else {
                 resetAnswer();
             }
@@ -90,10 +92,12 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         submit.setText(getString(R.string.again));
         scoreRotate = score;
     }
+
     private void setToZero (){
         score = 0;
         buttonState = 0;
     }
+
     private void resetAnswer() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -106,6 +110,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         clearRadioAnswers();
         buttonState = 1;
     }
+
     /**
      * calculates RadioButton question
      */
@@ -144,6 +149,28 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (k == 3) {
             score++;
+        }
+    }
+
+    /**
+     * disable RadioButton questions when Submit button is clicked
+     */
+    private void disableRadioAnswers() {
+        for (int idRB : allRadioGroupsArr) {
+            RadioGroup currRadioGroup = findViewById(idRB);
+            for (int i = 0; i < currRadioGroup.getChildCount(); i++) {
+                currRadioGroup.getChildAt(i).setEnabled(false);
+            }
+        }
+    }
+
+    /**
+     * disable RadioButton questions when Submit button is clicked
+     */
+    private void disableCheckBoxAnswers() {
+        for (int idCB : allCheckBoxesArr) {
+            CheckBox currCheckBox = findViewById(idCB);
+            currCheckBox.setEnabled(false);
         }
     }
 
@@ -224,6 +251,8 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         if (buttonState == 0) {
             checkAnswer(scoreRotate);
             scrollDialogDown();
+            disableRadioAnswers();
+            disableCheckBoxAnswers();
         }
         super.onRestoreInstanceState(bundle);
     }
