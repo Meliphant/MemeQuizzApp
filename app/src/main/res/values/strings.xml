@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">QuizzApp</string>
+    <string name="app_name">memequiz</string>
     <string name="name_enter">Please enter your name hero</string>
     <string name="sumbit">Submit!</string>
     <string name="welcome">Welcome</string>
@@ -76,4 +76,6 @@
     <string name="no">Nono.</string>
     <string name="exitApp">Are you sure you want to close the app?</string>
     <string name="exitQuiz">Are you sure you want to start the quiz again?</string>
+    <string name="input_name_error_msg">Please enter your name!</string>
+    <string name="edit_text_answer">The Walking Dead</string>
 </resources>

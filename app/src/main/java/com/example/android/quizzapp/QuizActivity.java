@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -25,6 +26,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     private String userName, message;
     private ImageView picResult;
     private ScrollView getScrollView;
+    private EditText answerET;
 
     static final String SCORE_ROTATE_SAVER = "scoreRotateSaver";
     static final String USER_NAME = "userName";
@@ -36,7 +38,6 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
             R.id.answers1,
             R.id.answers2,
             R.id.answers3,
-            R.id.answers5,
             R.id.answers6,
             R.id.answers7,
             R.id.answers8
@@ -61,6 +62,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
 
         scoreResult = findViewById(R.id.scoreResult);
         picResult = findViewById(R.id.pic_answer);
+        answerET = findViewById(R.id.answers5);
     }
     /**
      * onClick method checks state of the quiz activity screen and either shows the result of the quiz or starts new one
@@ -73,6 +75,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
             if (buttonState == 1) {
                 getRadioAnswers();
                 getCheckBoxAnswers();
+                getEtAnswers();
                 checkAnswer(score);
                 setToZero();
                 disableRadioAnswers();
@@ -152,6 +155,11 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void getEtAnswers() {
+        if (answerET.getText().toString().equalsIgnoreCase(getString(R.string.edit_text_answer))) {
+            score++;
+        }
+    }
     /**
      * disable RadioButton questions when Submit button is clicked
      */

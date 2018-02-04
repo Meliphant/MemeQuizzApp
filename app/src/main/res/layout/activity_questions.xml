@@ -340,30 +340,14 @@
                 style="@style/singleImageView"
                 android:src="@drawable/quiz5_1" />
 
-            <RadioGroup
+            <EditText
                 android:id="@+id/answers5"
-                style="@style/RadioGroup">
-
-                <RadioButton
-                    android:id="@+id/radio5_1"
-                    style="@style/RadioButton"
-                    android:text="@string/answer5_1" />
-
-                <RadioButton
-                    android:id="@+id/radio5_2"
-                    style="@style/RadioButton"
-                    android:text="@string/answer5_2" />
-
-                <RadioButton
-                    android:id="@+id/radio5_3"
-                    style="@style/RadioButton"
-                    android:text="@string/answer5_3" />
-
-                <RadioButton
-                    android:id="@+id/radio5_4"
-                    style="@style/RadioButton"
-                    android:text="@string/answer5_4" />
-            </RadioGroup>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your answer"
+                android:layout_marginTop="8dp"
+                android:inputType="text"
+                android:imeOptions="actionDone"/>
 
         </LinearLayout>
 

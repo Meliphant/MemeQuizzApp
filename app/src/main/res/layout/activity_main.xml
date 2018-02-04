@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/basisMpMp"
     android:background="#8BC34A"
+    android:focusableInTouchMode="false"
+    android:isScrollContainer="false"
     tools:context="com.example.android.quizzapp.MainActivity">
 
     <LinearLayout

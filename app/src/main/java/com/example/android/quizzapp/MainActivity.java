@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -17,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressBar mProgressBar;
     private EditText name;
     private String userName;
+    private static final String USER_NAME_PATTERN = "[\\w.-]{1,20}";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +39,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         userName = name.getText().toString();
-        if (userName.isEmpty()) userName = getString(R.string.username);
+
+        if (isUserNameNotCorrect(userName)) {
+            Toast.makeText(this, R.string.input_name_error_msg, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         mProgressBar.setVisibility(View.VISIBLE);
 
         final Intent intent = new Intent(this, QuizActivity.class);
@@ -44,6 +53,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
         //call the destroy method to kill MainActivity intent after redirecting to QuizActivity
         finish();
+    }
+    private boolean isUserNameNotCorrect(String userName) {
+        return userName.isEmpty() || !userName.matches(USER_NAME_PATTERN);
+    }
+
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (view != null && imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View view = getCurrentFocus();
+            if (view instanceof EditText) {
+
+                view.clearFocus();
+                hideKeyboard();
+            }
+        }
+
+        return super.dispatchTouchEvent(ev);
     }
 /*
     @Override
